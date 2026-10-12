@@ -1,0 +1,205 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// Money is always integer paise. CHECK constraints for prices/stock/quantities
+// live in the migration SQL (Prisma cannot declare them).
+
+model Category {
+  slug     String    @id
+  name     String
+  icon     String
+  position Int       @default(0)
+  products Product[]
+}
+
+model Product {
+  id           String      @id @default(cuid())
+  slug         String      @unique
+  name         String
+  categorySlug String
+  category     Category    @relation(fields: [categorySlug], references: [slug])
+  brand        String
+  unit         String
+  pricePaise   Int
+  mrpPaise     Int
+  stock        Int         @default(0)
+  icon         String
+  imageUrl     String?
+  description  String
+  featured     Boolean     @default(false)
+  active       Boolean     @default(true)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  orderItems   OrderItem[]
+
+  @@index([categorySlug, active, pricePaise])
+  @@index([active, featured])
+  @@index([active, name])
+}
+
+enum Role {
+  CUSTOMER
+  ADMIN
+}
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  name         String
+  phone        String?
+  passwordHash String
+  role         Role      @default(CUSTOMER)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  sessions     Session[]
+  addresses    Address[]
+  orders       Order[]
+}
+
+// The id is the SHA-256 of the random cookie token; the raw token is never stored.
+model Session {
+  id        String   @id
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model Address {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  fullName  String
+  phone     String
+  line1     String
+  line2     String?
+  landmark  String?
+  city      String
+  pincode   String
+  isDefault Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model ServiceArea {
+  pincode   String   @id
+  area      String
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum OrderStatus {
+  PENDING_PAYMENT
+  CONFIRMED
+  PACKING
+  OUT_FOR_DELIVERY
+  DELIVERED
+  CANCELLED
+}
+
+enum PaymentMethod {
+  COD
+  RAZORPAY
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUND_DUE
+  REFUNDED
+}
+
+model Order {
+  id                String        @id @default(cuid())
+  number            Int           @unique @default(autoincrement())
+  userId            String
+  user              User          @relation(fields: [userId], references: [id])
+  status            OrderStatus
+  paymentMethod     PaymentMethod
+  paymentStatus     PaymentStatus @default(PENDING)
+  subtotalPaise     Int
+  deliveryPaise     Int
+  totalPaise        Int
+  savingsPaise      Int
+  addressSnapshot   Json
+  pincode           String
+  slotStart         DateTime
+  slotEnd           DateTime
+  idempotencyKey    String
+  requestHash       String
+  reservedUntil     DateTime?
+  razorpayOrderId   String?       @unique
+  razorpayPaymentId String?       @unique
+  cancelReason      String?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  items             OrderItem[]
+  events            OrderEvent[]
+
+  @@unique([userId, idempotencyKey])
+  @@index([userId, createdAt])
+  @@index([status, reservedUntil])
+  @@index([createdAt])
+}
+
+// Immutable snapshot of what was sold; survives later catalog edits/deletes.
+model OrderItem {
+  id             String   @id @default(cuid())
+  orderId        String
+  order          Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId      String?
+  product        Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+  productName    String
+  productSlug    String
+  unit           String
+  icon           String
+  imageUrl       String?
+  unitPricePaise Int
+  mrpPaise       Int
+  quantity       Int
+  lineTotalPaise Int
+
+  @@index([orderId])
+  @@index([productId])
+}
+
+// Append-only audit trail of status/payment changes.
+model OrderEvent {
+  id            String         @id @default(cuid())
+  orderId       String
+  order         Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  status        OrderStatus?
+  paymentStatus PaymentStatus?
+  note          String
+  actor         String
+  createdAt     DateTime       @default(now())
+
+  @@index([orderId, createdAt])
+}
+
+// Razorpay webhook deliveries already processed (x-razorpay-event-id).
+model PaymentWebhookEvent {
+  id         String   @id
+  event      String
+  receivedAt DateTime @default(now())
+}
+
+// Fixed-window counters for login/registration/checkout throttling.
+model RateLimit {
+  key     String   @id
+  count   Int
+  resetAt DateTime
+}
