@@ -363,3 +363,15 @@ footer .footer-links a:hover{color:#fff}
 @keyframes cart-count-in{from{opacity:.4;transform:translateY(5px) scale(.85)}to{opacity:1;transform:translateY(0) scale(1)}}
 @media(max-width:760px){.cart-notice{right:12px;bottom:calc(78px + env(safe-area-inset-bottom));width:calc(100vw - 24px);gap:9px;padding:13px 11px}.cart-notice-check{width:28px;height:28px}.cart-notice>a{font-size:10px}.cart-notice p{font-size:10px}.cart-notice p span{display:none}}
 @media(prefers-reduced-motion:reduce){.cart-flyer,.cart-flight-target{display:none}.cart-notice,.cart-stepper,.cart-quantity{animation:none}.add-button:active{transform:none}}
+
+/* ---------- Product cards: aligned rows ----------
+   Cards in a row are equal height (grid stretch). Reserving two lines for the name keeps brand, name, pack size
+   and price on the same lines in every card, and the price + button block is pinned to the bottom of the card,
+   so "Add to cart" buttons and steppers line up across a row whatever the name length. */
+.product-card{display:flex;flex-direction:column}
+.product-info{flex:1;display:flex;flex-direction:column}
+.product-info h3{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow:hidden;line-height:1.3;min-height:2.6em}
+.product-info .price{margin-top:auto;padding-top:14px}
+/* "Add to cart" and the quantity stepper swap in place, so they must be exactly the same size. */
+.product-info .add-button,.product-info .stepper{box-sizing:border-box;height:38px;min-height:38px}
+.product-info .stepper button{min-height:0;height:100%}
