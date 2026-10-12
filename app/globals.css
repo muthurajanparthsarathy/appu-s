@@ -347,7 +347,7 @@ footer .footer-links a:hover{color:#fff}
 
 /* Add-to-basket motion: transform/opacity only; never blocks pointer input. */
 [data-cart-target]{display:inline-flex;transform-origin:center}
-.cart-flyer{position:fixed;z-index:120;width:56px;height:56px;border:1px solid #dbe6d5;border-radius:14px;background:#fff;box-shadow:0 10px 25px #173c2b30;display:grid;place-items:center;pointer-events:none;color:var(--green);overflow:hidden;animation:cart-flight 780ms cubic-bezier(.25,.65,.3,1) both;will-change:transform,opacity}
+.cart-flyer{position:fixed;z-index:120;width:56px;height:56px;border:1px solid #dbe6d5;border-radius:14px;background:#fff;box-shadow:0 10px 25px #173c2b30;display:grid;place-items:center;pointer-events:none;color:var(--green);overflow:hidden;animation:cart-flight 600ms cubic-bezier(.4,0,.2,1) both;will-change:transform,opacity}
 .cart-flyer img{width:100%;height:100%;object-fit:contain;padding:4px}
 .cart-flight-target{position:fixed;right:20px;top:22px;z-index:119;width:56px;height:56px;border-radius:50%;display:grid;place-items:center;background:var(--green);color:#fff;box-shadow:0 6px 22px #173c2b25;animation:cart-target-in .2s ease-out}
 .cart-notice{position:fixed;right:24px;bottom:26px;z-index:121;display:flex;align-items:center;gap:13px;width:min(460px,calc(100vw - 40px));padding:17px 15px;background:#fff;border:1px solid #dbe6d5;border-radius:12px;box-shadow:0 12px 45px #173c2b25;animation:cart-notice-in .32s cubic-bezier(.2,.8,.2,1) both}
@@ -355,7 +355,8 @@ footer .footer-links a:hover{color:#fff}
 .cart-notice>div{flex:1;min-width:0}.cart-notice strong{font-size:12px;color:var(--green)}.cart-notice p{font-size:11px;color:#6e786c;margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.cart-notice p span{color:#8b9487}.cart-notice>a{font-size:11px;color:var(--green);font-weight:700;white-space:nowrap}.cart-notice>button{border:0;background:transparent;display:grid;place-items:center;color:#6e786c;min-width:28px;min-height:32px}
 .cart-feedback-live{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 .cart-stepper{animation:cart-stepper-in .22s ease-out}.cart-quantity{display:inline-block;animation:cart-count-in .24s ease-out}.add-button:active{transform:scale(.97)}
-@keyframes cart-flight{0%{transform:translate(0,0) scale(1);opacity:1}45%{transform:translate(var(--cart-mid-x),var(--cart-mid-y)) scale(.85) rotate(-12deg);opacity:1}88%{opacity:1}100%{transform:translate(var(--cart-x),var(--cart-y)) scale(.16) rotate(8deg);opacity:0}}
+/* Straight line from the product to the basket (no arc), shrinking and fading as it lands. */
+@keyframes cart-flight{0%{transform:translate(0,0) scale(1);opacity:1}80%{opacity:1}100%{transform:translate(var(--cart-x),var(--cart-y)) scale(.2);opacity:0}}
 @keyframes cart-notice-in{from{opacity:0;transform:translateY(18px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
 @keyframes cart-target-in{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:scale(1)}}
 @keyframes cart-stepper-in{from{opacity:.5;transform:scale(.96)}to{opacity:1;transform:scale(1)}}

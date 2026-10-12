@@ -8,6 +8,8 @@ import type { Product } from '@/app/lib/types';
 type FeedbackProduct = Pick<Product, 'name' | 'imageUrl' | 'unit'>;
 type Feedback = { id: number; product: FeedbackProduct; quantity: number; style: CSSProperties; floatingTarget: boolean; flying: boolean };
 const Context = createContext<(product: FeedbackProduct, quantity: number, source: HTMLElement) => void>(() => {});
+// Keep in sync with the cart-flight animation duration in globals.css (the basket bounces when the item lands).
+const FLIGHT_MS = 600;
 
 /** Visual feedback is independent of basket persistence and never delays a cart update. */
 export function CartFeedbackProvider({ children }: { children: ReactNode }) {
@@ -37,14 +39,14 @@ export function CartFeedbackProvider({ children }: { children: ReactNode }) {
     const endX = bounds ? bounds.left + bounds.width / 2 - 28 : window.innerWidth - 76;
     const endY = bounds ? bounds.top + bounds.height / 2 - 28 : 22;
     const id = ++sequence.current;
-    const style = { left: x, top: y, '--cart-x': `${endX-x}px`, '--cart-y': `${endY-y}px`, '--cart-mid-x': `${(endX-x)*.48}px`, '--cart-mid-y': `${Math.min(endY-y,0)-75}px` } as CSSProperties;
+    const style = { left: x, top: y, '--cart-x': `${endX-x}px`, '--cart-y': `${endY-y}px` } as CSSProperties;
     setFeedback({ id, product, quantity, style, floatingTarget: !target, flying: !reduced });
     timers.current.push(setTimeout(() => {
       setFeedback(current => current?.id === id ? { ...current, flying: false } : current);
       if (!reduced && target?.isConnected) {
         targetAnimation.current = target.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.23) rotate(-9deg)' }, { transform: 'scale(.94) rotate(5deg)' }, { transform: 'scale(1)' }], { duration: 430, easing: 'ease-out' });
       }
-    }, reduced ? 0 : 780));
+    }, reduced ? 0 : FLIGHT_MS));
     timers.current.push(setTimeout(() => setFeedback(current => current?.id === id ? null : current), 3600));
   };
 
