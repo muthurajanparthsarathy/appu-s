@@ -6,3 +6,4 @@ app/generated/
 *.tsbuildinfo
 coverage/
 .pgdata/
+appus-mart-deploy.tar.gz

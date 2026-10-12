@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+  <defs><clipPath id="avatar"><circle cx="24" cy="24" r="20.5"/></clipPath></defs>
+  <circle cx="24" cy="24" r="20.5" fill="#e3f1d9"/>
+  <g clip-path="url(#avatar)">
+    <rect x="20.8" y="24.5" width="6.4" height="8" rx="2" fill="#dd9f70"/>
+    <path d="M7 47c0-10 7.6-15.6 17-15.6S41 37 41 47z" fill="#185a39"/>
+    <path d="M20 31.8 24 36l4-4.2" fill="none" stroke="#8bc34a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <circle cx="24" cy="18.6" r="7.6" fill="#f2c094"/>
+  <path d="M16.3 18.2c0-5.1 3.5-8.3 7.7-8.3s7.7 3.2 7.7 8.3c-1.3-2.7-3.7-4-7.7-4s-6.4 1.3-7.7 4z" fill="#3b2a1a"/>
+</svg>

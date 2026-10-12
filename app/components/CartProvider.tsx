@@ -1,6 +1,7 @@
 'use client';
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import type { CartLine } from '@/app/lib/types';
+import { CartFeedbackProvider } from './CartFeedback';
 type CartContextType = { lines: CartLine[]; ready: boolean; setQuantity: (id: string, quantity: number) => void; clear: () => void; count: number };
 const CartContext = createContext<CartContextType | null>(null);
 const STORAGE_KEY = 'veenamart.cart.v1';
@@ -37,6 +38,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
     return current.length < 50 ? [...current, { productId: id, quantity: normalized }] : current;
   });
   const clear = () => setLines([]);
-  return <CartContext.Provider value={{ lines, ready, setQuantity, clear, count: lines.reduce((sum, line) => sum + line.quantity, 0) }}>{children}</CartContext.Provider>;
+  return <CartContext.Provider value={{ lines, ready, setQuantity, clear, count: lines.reduce((sum, line) => sum + line.quantity, 0) }}><CartFeedbackProvider>{children}</CartFeedbackProvider></CartContext.Provider>;
 }
 export function useCart() { const context = useContext(CartContext); if (!context) throw new Error('Missing CartProvider'); return context; }
