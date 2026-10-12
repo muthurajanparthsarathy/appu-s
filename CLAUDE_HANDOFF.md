@@ -1,4 +1,6 @@
-# Handoff: VeenaMart status (v0.2, 2026-10-12)
+# Handoff: Appu's Mart status (v0.3, 2026-10-12)
+
+The store was renamed **Appu's Mart** (customer-facing text only; folder, database and internal keys keep "veenamart"). The catalogue was replaced with the owner's list of 30 staples. 9 are hidden until priced. Buy 1 Get 1 offers are supported (`Product.offer`, `OrderItem.paidQuantity`). Product photos are the manufacturer's (docs/ASSETS.md). To repeat the catalogue swap on another database: `npx tsx scripts/replace-catalog.ts --confirm`, then `npm run db:seed`.
 
 Read `README.md`, `docs/ARCHITECTURE.md` and `docs/VALIDATION.md` first. Do not rebuild from scratch.
 

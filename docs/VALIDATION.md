@@ -25,6 +25,21 @@ What was actually checked for v0.2 (2026-10-12), how, and what was **not** verif
 9. Admin product edit: MRP below price was rejected. Price ₹60.50 and stock 25 were saved and visible on the storefront.
 10. Customer cancel: ₹96 + ₹35 delivery = ₹131 order, cancelled → "Not charged", tomato stock restored to 48.
 11. Mobile (375 px): order tracking and checkout layouts checked visually; desktop order list checked.
+11c. Appu's Mart catalogue (2026-10-12):
+    - Old catalogue removed with `scripts/replace-catalog.ts` (19 products, 10 categories). Order history is kept.
+    - 30 products seeded: 21 visible, 9 hidden and unpriced. The admin list shows "Needs price".
+    - Live quotes: 2 × Gold Appalam 200 g = ₹90; 3 packs = ₹180; 2 × 150 g = ₹80. Savings are measured against MRP. A hidden product is refused, and its page is not found (noindex).
+    - Brand text is "Appu's Mart" everywhere; order numbers are AM…. Banner uses brand-free artwork plus cut-out Appu packs.
+    - Checked at 1280 px and 375 px (a mobile best-seller grid regression from v0.2 was fixed). There is no overflow and no broken images.
+    - Tests: 22 unit + 14 DB (adds BOGO pricing, paid/free snapshot, restock of free packs, and owner price-list checks).
+    - Fixed `db.ts` to drop a stale Prisma client after `prisma generate`. The running dev server still needed one restart.
+11b. Home rebuilt to the design references:
+    - Compact header, search and category bar (now with category photos; 8 categories at 1280 px, with no overflow).
+    - The design's banner artwork, headline, feature row and buttons.
+    - Photo category circles, with the "What's on your shopping list?" heading removed.
+    - Best Sellers beside the two image promo cards.
+    - Real product photos for 11 products.
+    - Checked at 1280, 768 and 375 px with no horizontal scroll. Every image returns HTTP 200. Typecheck and the 19 unit + 13 DB tests are still green.
 11a. Home hero resized to match the references: 250 px at 1280×720 (was 415 px, 58% of the screen; now 35%), 270 px at ≥1500 px, and a 212 px rounded card on phones (was 346 px). Trust badges and categories are now visible on the first screen. No horizontal scrolling at 375, 768 or 1280 px. This pass also fixed a tablet overflow: the 10 category circles now wrap into two rows of 5.
 12. Demo mode on a production build (`CATALOG_SOURCE=demo`): catalogue, search counts, offers, product and help pages render. Accounts, checkout and admin show the "needs the database" notice. Unknown category → noindex not-found. Health reports `database: not-configured`. Security headers are present.
 

@@ -15,8 +15,8 @@ const ids = { users: [] as string[], products: [] as string[] };
 let customer: string, other: string, address: string, otherAddress: string, farAddress: string;
 
 const stockOf = async (id: string) => (await db().product.findUniqueOrThrow({ where: { id } })).stock;
-async function product(stock: number, pricePaise = 10_000) {
-  const created = await db().product.create({ data: { slug: `test-${run}-${ids.products.length}`, name: `Test item ${ids.products.length}`, categorySlug: 'groceries', brand: 'Test', unit: '1 pc', pricePaise, mrpPaise: pricePaise + 1000, stock, icon: '🧪', description: 'Integration test product' } });
+async function product(stock: number, pricePaise = 10_000, extra: { offer?: 'BOGO' } = {}) {
+  const created = await db().product.create({ data: { slug: `test-${run}-${ids.products.length}`, name: `Test item ${ids.products.length}`, categorySlug: 'rice', brand: 'Test', unit: '1 pc', pricePaise, mrpPaise: pricePaise + 1000, stock, icon: '🧪', description: 'Integration test product', ...extra } });
   ids.products.push(created.id);
   return created.id;
 }
@@ -81,6 +81,18 @@ describe('order service', { skip }, () => {
     assert.equal(a.order.id, b.order.id);
     assert.deepEqual([a.created, b.created].sort(), [false, true]);
     assert.equal(await stockOf(id), 1);
+  });
+
+  test('buy one get one: order lines record paid and free packs; stock counts every pack', async () => {
+    const id = await product(10, 9000, { offer: 'BOGO' });
+    const { order } = await placeOrder(customer, checkout([{ productId: id, quantity: 3 }]), { razorpayEnabled: false });
+    const [item] = order.items;
+    assert.deepEqual([item.quantity, item.paidQuantity, item.lineTotalPaise], [3, 2, 18000]);
+    assert.equal(order.subtotalPaise, 18000);
+    assert.equal(order.savingsPaise, 3 * 10000 - 18000);
+    assert.equal(await stockOf(id), 7);
+    assert.ok(await cancelOrderAsCustomer(customer, order.id));
+    assert.equal(await stockOf(id), 10, 'free packs are restocked too');
   });
 
   test('a failing line rolls back every stock change', async () => {

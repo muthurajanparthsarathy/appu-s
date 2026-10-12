@@ -7,14 +7,14 @@ export type CatalogQuery = { category?: string; q?: string; sort?: string; offer
 export const PAGE_SIZE = 24;
 
 // Only these fields leave the server; internal columns (active, timestamps) stay out of client payloads.
-export const productSelect = { id: true, slug: true, name: true, categorySlug: true, brand: true, unit: true, pricePaise: true, mrpPaise: true, stock: true, icon: true, imageUrl: true, description: true, featured: true } as const;
+export const productSelect = { id: true, slug: true, name: true, categorySlug: true, brand: true, unit: true, pricePaise: true, mrpPaise: true, stock: true, icon: true, imageUrl: true, offer: true, description: true, featured: true } as const;
 
 const database = async () => (await import('./db')).db();
 const search = (q?: string) => q?.trim().slice(0, 100) || undefined;
 
 export async function getCategories(): Promise<Category[]> {
   if (!isDatabaseMode()) return categories;
-  return (await database()).category.findMany({ orderBy: { position: 'asc' }, select: { slug: true, name: true, icon: true } });
+  return (await database()).category.findMany({ orderBy: { position: 'asc' }, select: { slug: true, name: true, icon: true, imageUrl: true } });
 }
 
 async function databaseWhere(query: CatalogQuery) {

@@ -3,7 +3,7 @@ import type { Category } from '@/app/lib/types';
 import { paiseToRupeesInput } from '@/app/lib/money';
 import { ActionForm, Checkbox, Field } from './forms';
 
-type Editable = { id: string; name: string; slug: string; categorySlug: string; brand: string; unit: string; pricePaise: number; mrpPaise: number; stock: number; icon: string; imageUrl: string | null; description: string; featured: boolean; active: boolean };
+type Editable = { id: string; name: string; slug: string; categorySlug: string; brand: string; unit: string; pricePaise: number; mrpPaise: number; stock: number; icon: string; imageUrl: string | null; offer: 'NONE' | 'BOGO'; description: string; featured: boolean; active: boolean };
 
 export function ProductForm({ product, categories }: { product?: Editable; categories: Category[] }) {
   return <ActionForm action={saveProduct.bind(null, product?.id ?? null)} submitLabel={product ? 'Save changes' : 'Create product'} className="stack-form product-form">
@@ -18,13 +18,14 @@ export function ProductForm({ product, categories }: { product?: Editable; categ
       <Field name="unit" label="Pack size" required defaultValue={product?.unit} maxLength={30} placeholder="1 kg"/>
     </div>
     <div className="form-grid">
-      <Field name="price" label="Selling price (₹)" required inputMode="decimal" defaultValue={product ? paiseToRupeesInput(product.pricePaise) : undefined} hint="Including taxes."/>
-      <Field name="mrp" label="MRP (₹)" required inputMode="decimal" defaultValue={product ? paiseToRupeesInput(product.mrpPaise) : undefined}/>
+      <Field name="price" label="Selling price (₹)" required inputMode="decimal" defaultValue={product?.pricePaise ? paiseToRupeesInput(product.pricePaise) : undefined} hint="Including taxes."/>
+      <Field name="mrp" label="MRP (₹)" required inputMode="decimal" defaultValue={product?.mrpPaise ? paiseToRupeesInput(product.mrpPaise) : undefined}/>
       {/* Keyed on the stored stock so it re-mounts with the live value after a save; it must always match loadedStock. */}
       <Field key={`stock-${product?.stock ?? 0}`} name="stock" label="Stock (packs)" required inputMode="numeric" defaultValue={product?.stock ?? 0}/>
     </div>
     <div className="form-grid">
       <Field name="icon" label="Fallback emoji" required defaultValue={product?.icon ?? '🛒'} maxLength={8}/>
+      <Field name="offer" label="Offer" defaultValue={product?.offer ?? 'NONE'} options={[{ value: 'NONE', label: 'No offer' }, { value: 'BOGO', label: 'Buy 1 Get 1 free (add 2, pay 1)' }]}/>
       <Field name="imageUrl" label="Photo URL" defaultValue={product?.imageUrl ?? ''} maxLength={500} hint="A licensed photo: /images/products/… or https://…"/>
     </div>
     <Field name="description" label="Description" required multiline defaultValue={product?.description} maxLength={2000}/>

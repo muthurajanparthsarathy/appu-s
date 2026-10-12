@@ -11,14 +11,17 @@ export function parseCart(value: unknown): CartLine[] {
     return { productId: row.productId, quantity: row.quantity };
   });
 }
+// Buy one get one free: every second pack on the line is free (2 packs = pay 1, 3 packs = pay 2).
+export const paidQuantity = (offer: Product['offer'], quantity: number) => offer === 'BOGO' ? Math.ceil(quantity / 2) : quantity;
 export function calculateQuote(lines: CartLine[], products: Product[]): Quote {
   const items = lines.map(line => {
     const product = products.find(p => p.id === line.productId);
     if (!product) throw new Error('A product is no longer available. Remove it from your cart.');
     if (product.stock < line.quantity) throw new Error(`Only ${product.stock} units of ${product.name} available.`);
-    return { product, quantity: line.quantity, lineTotalPaise: product.pricePaise * line.quantity };
+    const paid = paidQuantity(product.offer, line.quantity);
+    return { product, quantity: line.quantity, paidQuantity: paid, lineTotalPaise: product.pricePaise * paid };
   });
   const subtotalPaise = items.reduce((sum,i) => sum+i.lineTotalPaise,0);
   const deliveryPaise = items.length && subtotalPaise < FREE_DELIVERY_PAISE ? DELIVERY_FEE_PAISE : 0;
-  return { items, subtotalPaise, deliveryPaise, totalPaise: subtotalPaise+deliveryPaise, savingsPaise: items.reduce((sum,i) => sum+Math.max(0,i.product.mrpPaise-i.product.pricePaise)*i.quantity,0) };
+  return { items, subtotalPaise, deliveryPaise, totalPaise: subtotalPaise+deliveryPaise, savingsPaise: items.reduce((sum,i) => sum+Math.max(0,i.product.mrpPaise*i.quantity-i.lineTotalPaise),0) };
 }

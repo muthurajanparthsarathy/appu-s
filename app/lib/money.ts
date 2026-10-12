@@ -10,4 +10,4 @@ export function parseRupeesToPaise(input: unknown): number | null {
 
 export const paiseToRupeesInput = (paise: number) => `${Math.floor(paise / 100)}.${String(paise % 100).padStart(2, '0')}`;
 
-export const orderNumber = (number: number) => `VM${number}`;
+export const orderNumber = (number: number) => `AM${number}`;

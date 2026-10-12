@@ -6,7 +6,7 @@ export const RESERVATION_MINUTES = 15;
 
 export type RazorpayConfig = { keyId: string; keySecret: string; webhookSecret: string | null };
 
-// Razorpay is enabled only when VeenaMart's own keys are configured. Live keys are refused outside production builds.
+// Razorpay is enabled only when the store's own keys are configured. Live keys are refused outside production builds.
 export function razorpayConfig(): RazorpayConfig | null {
   const keyId = process.env.RAZORPAY_KEY_ID?.trim();
   const keySecret = process.env.RAZORPAY_KEY_SECRET?.trim();

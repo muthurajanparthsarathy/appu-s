@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import { PrismaClient } from '../app/generated/prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
-import { categories, products } from '../app/data/catalog';
+import { categories, catalogProducts } from '../app/data/catalog';
 import { DEFAULT_SERVICE_AREA, DEFAULT_SERVICE_PINCODES } from '../app/server/delivery';
 import { hashPassword, PASSWORD_MIN } from '../app/server/password';
 
@@ -12,7 +12,10 @@ const db = new PrismaClient({ adapter: new PrismaPg({ connectionString: process.
 async function main() {
   await db.$transaction(async tx => {
     for (const [position, category] of categories.entries()) await tx.category.upsert({ where: { slug: category.slug }, create: { ...category, position }, update: {} });
-    for (const product of products) await tx.product.upsert({ where: { slug: product.slug }, create: product, update: {} });
+    for (const product of catalogProducts) await tx.product.upsert({ where: { slug: product.slug }, create: product, update: {} });
+    // Fill in photos only where none is set yet, so images chosen later in the admin are never overwritten.
+    for (const category of categories) if (category.imageUrl) await tx.category.updateMany({ where: { slug: category.slug, imageUrl: null }, data: { imageUrl: category.imageUrl } });
+    for (const product of catalogProducts) if (product.imageUrl) await tx.product.updateMany({ where: { slug: product.slug, imageUrl: null }, data: { imageUrl: product.imageUrl } });
     await tx.serviceArea.createMany({ data: DEFAULT_SERVICE_PINCODES.map(pincode => ({ pincode, area: DEFAULT_SERVICE_AREA })), skipDuplicates: true });
   });
   console.log(`Catalog and ${DEFAULT_SERVICE_PINCODES.length} default delivery pincodes ensured. Existing records were preserved.`);
@@ -26,7 +29,7 @@ async function main() {
     return console.log(`Admin ${email} ensured (password unchanged).`);
   }
   if (password.length < PASSWORD_MIN) throw new Error(`Set ADMIN_PASSWORD (at least ${PASSWORD_MIN} characters) to create the admin account.`);
-  await db.user.create({ data: { email, name: 'VeenaMart Admin', role: 'ADMIN', passwordHash: await hashPassword(password) } });
+  await db.user.create({ data: { email, name: 'Admin', role: 'ADMIN', passwordHash: await hashPassword(password) } });
   console.log(`Admin ${email} created. Password is the ADMIN_PASSWORD value in .env.`);
 }
 main().catch(error => { console.error(error); process.exitCode = 1; }).finally(() => db.$disconnect());

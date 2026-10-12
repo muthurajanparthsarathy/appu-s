@@ -15,7 +15,7 @@ test('rupee input converts to exact integer paise', () => {
   for (const bad of ['', '-1', '1.234', '1e3', 'abc', '12,50', 5]) assert.equal(parseRupeesToPaise(bad), null);
   assert.equal(paiseToRupeesInput(3205), '32.05');
   assert.equal(parseRupeesToPaise(paiseToRupeesInput(49900)), 49900);
-  assert.equal(orderNumber(100001), 'VM100001');
+  assert.equal(orderNumber(100001), 'AM100001');
 });
 
 // 2026-10-12 06:00 UTC = 11:30 IST
@@ -108,7 +108,12 @@ test('registration and address validation', () => {
 test('product form validation converts money and guards image URLs', () => {
   const base = { name: 'Green Peas', slug: '', categorySlug: 'frozen', brand: 'Daily Good', unit: '500 g', price: '95', mrp: '110.00', stock: '15', icon: '🌱', imageUrl: '', description: 'Frozen green peas for curries.', active: 'on' };
   const ok = parseProduct(base, parseRupeesToPaise);
-  assert.ok(ok.ok && ok.data.slug === 'green-peas' && ok.data.pricePaise === 9500 && ok.data.mrpPaise === 11000 && ok.data.active && !ok.data.featured);
+  assert.ok(ok.ok && ok.data.slug === 'green-peas' && ok.data.pricePaise === 9500 && ok.data.mrpPaise === 11000 && ok.data.active && !ok.data.featured && ok.data.offer === 'NONE');
+  const bogo = parseProduct({ ...base, offer: 'BOGO' }, parseRupeesToPaise);
+  assert.ok(bogo.ok && bogo.data.offer === 'BOGO');
+  const sneaky = parseProduct({ ...base, offer: 'FREE_FOR_ALL' }, parseRupeesToPaise);
+  assert.ok(sneaky.ok && sneaky.data.offer === 'NONE');
+  assert.ok(!parseProduct({ ...base, price: '0' }, parseRupeesToPaise).ok, 'a product cannot be saved without a price');
   assert.ok(!parseProduct({ ...base, mrp: '90' }, parseRupeesToPaise).ok);
   assert.ok(!parseProduct({ ...base, stock: '-2' }, parseRupeesToPaise).ok);
   assert.ok(parseProduct({ ...base, imageUrl: '/images/products/peas.webp' }, parseRupeesToPaise).ok);

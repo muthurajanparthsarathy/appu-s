@@ -24,10 +24,10 @@ export default async function AdminProducts({ searchParams }: { searchParams: Pr
         <td aria-hidden="true">{p.icon}</td>
         <td><Link href={`/admin/products/${p.id}`}><strong>{p.name}</strong></Link><br/><small className="muted">{p.brand} · {p.unit}</small></td>
         <td>{p.category.name}</td>
-        <td>{money(p.pricePaise)}</td>
-        <td>{money(p.mrpPaise)}</td>
+        <td>{p.pricePaise ? money(p.pricePaise) : <span className="badge status-pending_payment">Needs price</span>}</td>
+        <td>{p.mrpPaise ? money(p.mrpPaise) : '—'}</td>
         <td className={p.stock === 0 ? 'field-error' : p.stock <= 5 ? 'warn' : ''}>{p.stock}</td>
-        <td>{p.active ? <span className="badge status-confirmed">Visible</span> : <span className="badge status-cancelled">Hidden</span>}{p.featured && <span className="badge">Featured</span>}</td>
+        <td>{p.active ? <span className="badge status-confirmed">Visible</span> : <span className="badge status-cancelled">Hidden</span>}{p.featured && <span className="badge">Featured</span>}{p.offer === 'BOGO' && <span className="badge">Buy 1 Get 1</span>}</td>
       </tr>)}
     </tbody></table></div>
     <Pagination basePath="/admin/products" params={{ q }} page={page} pageCount={Math.max(1, Math.ceil(total / PAGE_SIZE))}/>

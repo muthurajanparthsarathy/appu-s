@@ -73,7 +73,7 @@ export async function placeOrder(userId: string, body: CheckoutRequest, options:
           addressSnapshot: { fullName: address.fullName, phone: address.phone, line1: address.line1, line2: address.line2, landmark: address.landmark, city: address.city, pincode: address.pincode },
           pincode: address.pincode, slotStart: slot.start, slotEnd: slot.end, idempotencyKey, requestHash,
           reservedUntil: method === 'RAZORPAY' ? new Date(now.getTime() + RESERVATION_MINUTES * 60_000) : null,
-          items: { create: quote.items.map(({ product, quantity, lineTotalPaise }) => ({ productId: product.id, productName: product.name, productSlug: product.slug, unit: product.unit, icon: product.icon, imageUrl: product.imageUrl, unitPricePaise: product.pricePaise, mrpPaise: product.mrpPaise, quantity, lineTotalPaise })) },
+          items: { create: quote.items.map(({ product, quantity, paidQuantity, lineTotalPaise }) => ({ productId: product.id, productName: product.name, productSlug: product.slug, unit: product.unit, icon: product.icon, imageUrl: product.imageUrl, unitPricePaise: product.pricePaise, mrpPaise: product.mrpPaise, quantity, paidQuantity, lineTotalPaise })) },
           events: { create: { status, paymentStatus: 'PENDING', actor: 'customer', note: method === 'COD' ? 'Order placed · cash on delivery' : `Order placed · items held for ${RESERVATION_MINUTES} minutes awaiting online payment` } }
         },
         include: withItems

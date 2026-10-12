@@ -23,7 +23,7 @@ export async function payWithRazorpay(options: RazorpayCheckout, events: { onVer
   await loadScript();
   const razorpay = new window.Razorpay!({
     key: options.keyId, order_id: options.razorpayOrderId, amount: options.amountPaise, currency: options.currency,
-    name: 'VeenaMart', description: options.description, prefill: options.prefill, theme: { color: '#185a39' },
+    name: 'Appu’s Mart', description: options.description, prefill: options.prefill, theme: { color: '#185a39' },
     handler: async (response: RazorpaySuccess) => {
       try {
         const result = await fetch('/api/payments/razorpay/verify', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ orderId: options.orderId, ...response }) });

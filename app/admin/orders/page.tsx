@@ -16,7 +16,7 @@ export default async function AdminOrders({ searchParams }: { searchParams: Prom
   const params = await searchParams;
   const status = Object.values(OrderStatus).find(s => s === params.status);
   const payment = Object.values(PaymentStatus).find(s => s === params.payment);
-  const number = Number(params.q?.replace(/^VM/i, ''));
+  const number = Number(params.q?.trim().replace(/^(AM|VM)/i, ''));
   const page = Math.max(1, Math.min(1000, Number(params.page) || 1));
   const where = { ...(status ? { status } : {}), ...(payment ? { paymentStatus: payment } : {}), ...(Number.isInteger(number) && number > 0 ? { number } : {}) };
   const [total, orders] = await Promise.all([
@@ -26,7 +26,7 @@ export default async function AdminOrders({ searchParams }: { searchParams: Prom
   return <>
     <h1>Orders</h1>
     <form className="filters" action="/admin/orders">
-      <input name="q" defaultValue={params.q} placeholder="Order no. e.g. VM100001" aria-label="Order number"/>
+      <input name="q" defaultValue={params.q} placeholder="Order no. e.g. AM100001" aria-label="Order number"/>
       <select name="status" defaultValue={status ?? ''} aria-label="Status"><option value="">All statuses</option>{Object.values(OrderStatus).map(s => <option key={s} value={s}>{STATUS_LABEL[s]}</option>)}</select>
       <select name="payment" defaultValue={payment ?? ''} aria-label="Payment"><option value="">All payments</option>{Object.values(PaymentStatus).map(s => <option key={s} value={s}>{s.replace('_', ' ').toLowerCase()}</option>)}</select>
       <button className="button small">Filter</button>

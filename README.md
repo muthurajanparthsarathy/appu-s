@@ -1,6 +1,6 @@
-# VeenaMart
+# Appu's Mart
 
-An independent Indian grocery store for Coimbatore: catalogue, basket, customer accounts, checkout with delivery slots, cash on delivery and Razorpay, order tracking, and a store admin. Built with Next.js 15 (App Router), React 18, TypeScript, Tailwind 3 and Prisma 7 on PostgreSQL. The WOW project was looked at only for stack and structure; no code, data, assets or credentials were copied.
+An Indian staples store for Coimbatore, selling Appu rice and appalam, PR and Daivam oils, ghee and butter. It covers the catalogue, basket, customer accounts, checkout with delivery slots, cash on delivery and Razorpay, order tracking, and a store admin. The project folder and some internal names (database, cookies, `admin@veenamart.test`) still use the earlier working name "VeenaMart"; customers never see it. Built with Next.js 15 (App Router), React 18, TypeScript, Tailwind 3 and Prisma 7 on PostgreSQL. The WOW project was looked at only for stack and structure; no code, data, assets or credentials were copied.
 
 ## Run locally (Windows / PowerShell)
 
@@ -37,7 +37,8 @@ Leave the `RAZORPAY_*` values empty to sell with cash on delivery only. To enabl
 
 ## What works
 
-- **Storefront**: home, 10 categories, search, price sort, pagination (24 per page), offers, product pages with stock levels. There's also a pincode delivery checker in the header.
+- **Storefront**: home, 4 categories (Rice, Cooking Oils, Ghee & Butter, Appalam & Vathal), 30 products from the owner's price list, search, price sort, pagination (24 per page), offers, product pages with stock levels. 9 products without a confirmed price are created **hidden**; set a price in Admin → Products and tick "Visible in store".
+- **Buy 1 Get 1**: per-product offer (Appu Appalam 150 g and Gold 200 g). Every second pack on the line is free ("add 2, pay for 1"), enforced in the server quote and recorded on orders as paid vs free packs. There's also a pincode delivery checker in the header.
 - **Basket**: kept on the device and synced across tabs. Prices always come from the server quote (integer paise).
 - **Accounts**: email + password (scrypt hashes) with HTTP-only session cookies, rate-limited login/registration, and saved addresses with Indian mobile/pincode validation.
 - **Checkout**:
@@ -75,7 +76,7 @@ See `docs/VALIDATION.md` for what was verified and how, and `docs/ARCHITECTURE.m
 
 - **Razorpay end-to-end**: the code is complete and tested with signed fixtures. It hasn't been run against Razorpay's servers because VeenaMart has no keys yet.
 - **Password reset and email/SMS notifications**: these need an email or SMS provider.
-- **Product photos**: real, licensed photography is needed. The `imageUrl` field and admin field are ready; emoji illustrations are shown until then.
+- **Product photos**: most products use the manufacturer's catalogue photos (see `docs/ASSETS.md`). Confirm you may use them, and add photos for butter, groundnut oil, idli and seeraga samba rice, curd chilli and the vathals.
 - **Legal and contact pages**: privacy policy, terms, returns/refund policy and store contact details must come from the business.
 - **Invoicing**: there are no GST invoices or tax breakdowns. Prices are treated as tax-inclusive.
 - **Slots**: slot capacity limits and substitutions aren't implemented.

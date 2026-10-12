@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { DatabaseRequired } from '@/app/components/DatabaseRequired';
 import { isDatabaseMode } from '@/app/server/config';
 import { requireAdmin } from '@/app/server/session';
-export const metadata = { title: { default: 'Admin', template: '%s · Admin | VeenaMart' }, robots: { index: false } };
+export const metadata = { title: { default: 'Admin', template: '%s · Admin | Appu’s Mart' }, robots: { index: false } };
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   if (!isDatabaseMode()) return <DatabaseRequired feature="Store admin"/>;
   const admin = await requireAdmin();

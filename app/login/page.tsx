@@ -12,7 +12,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
   const next = safeNextPath((await searchParams).next);
   if (await getCurrentUser()) redirect(next);
   return <main className="wrap auth-page"><section className="auth-card">
-    <span className="eyebrow">WELCOME BACK</span><h1>Sign in to VeenaMart</h1>
+    <span className="eyebrow">WELCOME BACK</span><h1>Sign in to Appu’s Mart</h1>
     <ActionForm action={login} submitLabel="Sign in" pendingLabel="Signing in…">
       <input type="hidden" name="next" value={next}/>
       <Field name="email" label="Email" type="email" required autoComplete="email" inputMode="email" maxLength={254}/>

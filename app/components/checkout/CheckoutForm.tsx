@@ -100,7 +100,7 @@ export function CheckoutForm({ addresses, slots, razorpayEnabled }: { addresses:
     <aside className="order-summary">
       <h2>Order summary</h2>
       {quoteError ? <p role="alert" className="field-error">{quoteError} <Link href="/cart">Review basket</Link></p> : quotePending || !quote ? <p role="status">Updating prices…</p> : <>
-        <ul className="summary-items">{quote.items.map(item => <li key={item.product.id}><span>{item.product.icon} {item.product.name} × {item.quantity}</span><span>{money(item.lineTotalPaise)}</span></li>)}</ul>
+        <ul className="summary-items">{quote.items.map(item => <li key={item.product.id}><span>{item.product.name} {item.product.unit} × {item.quantity}{item.quantity > item.paidQuantity && <b className="free-note"> ({item.quantity - item.paidQuantity} free)</b>}</span><span>{money(item.lineTotalPaise)}</span></li>)}</ul>
         <p><span>Subtotal</span><strong>{money(quote.subtotalPaise)}</strong></p>
         <p><span>Delivery</span><strong>{quote.deliveryPaise ? money(quote.deliveryPaise) : 'FREE'}</strong></p>
         <p className="total"><span>Total</span><strong>{money(quote.totalPaise)}</strong></p>

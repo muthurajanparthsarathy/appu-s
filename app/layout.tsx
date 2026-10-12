@@ -3,7 +3,7 @@ import { CartProvider } from './components/CartProvider';
 import { BottomNav, Footer, Header } from './components/Shell';
 import { getCurrentUser } from './server/session';
 import './globals.css';
-export const metadata: Metadata = { title: { default: 'VeenaMart — Good food. Better living.', template: '%s | VeenaMart' }, description: 'Your everyday Indian grocery store. Discover fresh vegetables, pantry essentials and the little things that make a home.' };
+export const metadata: Metadata = { title: { default: 'Appu’s Mart — Good food. Better living.', template: '%s | Appu’s Mart' }, description: 'Appu’s Mart, Coimbatore: Appu rice, PR and Daivam oils, ghee, butter and appalam, delivered to your door.' };
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   // A database outage must not take down catalogue browsing; the header simply shows a signed-out state.
   const user = await getCurrentUser().catch(() => null);

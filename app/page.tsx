@@ -1,11 +1,66 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowRight, BadgeCheck, Leaf, PackageCheck, ShieldCheck, Truck } from 'lucide-react';
+import { ArrowRight, BadgePercent, ChevronDown, LayoutGrid, Leaf, Menu, PackageCheck, ShieldCheck, Sprout, Truck } from 'lucide-react';
 import { getCategories, getProducts } from './server/catalog';
-import { CategoryStrip } from './components/CategoryStrip';
+import { CategoryStrip, CategoryThumb } from './components/CategoryStrip';
 import { ProductCard } from './components/ProductCard';
 export const dynamic = 'force-dynamic';
+
+const heroFeatures = [
+  { Icon: Sprout, text: 'Pure Quality Staples' },
+  { Icon: LayoutGrid, text: 'Rice, Oils, Ghee & Appalam' },
+  { Icon: BadgePercent, text: 'Great Offers & Deals' },
+  { Icon: Truck, text: 'Delivered to Your Doorstep' }
+];
+const trust = [
+  { Icon: Leaf, title: 'Trusted brands', text: 'Appu, PR and Daivam staples' },
+  { Icon: ShieldCheck, title: 'Pay your way', text: 'Cash on delivery available' },
+  { Icon: Truck, title: 'Choose your slot', text: 'Delivering across Coimbatore' },
+  { Icon: PackageCheck, title: 'Your pantry, sorted', text: 'Rice, oils, ghee, butter and appalam' }
+];
+
 export default async function Home() {
-  const [categories, products] = await Promise.all([getCategories(),getProducts({ featured: true }, 5)]);
-  return <main><nav className="desktop-categories" aria-label="Categories"><div className="wrap"><Link className="all-categories" href="/shop">☰ &nbsp; All categories</Link>{categories.slice(0,9).map(c => <Link href={`/category/${c.slug}`} key={c.slug}><span aria-hidden="true">{c.icon}</span> {c.name}</Link>)}</div></nav><section className="hero"><Image src="/images/grocery-hero.png" alt="Fresh vegetables, rice and lentils in a wicker basket" fill priority sizes="100vw" className="hero-image"/><div className="hero-wash"/><div className="wrap hero-content"><span className="script">Pure & Fresh</span><h1>A little closer<br/>to <em>freshness.</em></h1><p>Authentic Indian groceries. <span>From our home to yours.</span></p><div className="hero-actions"><Link href="/shop" className="button">Shop groceries <ArrowRight size={17}/></Link><Link href="/offers" className="text-link">Explore offers <ArrowRight size={16}/></Link></div></div><span className="hero-stamp">Fresh picks<br/><b>Happy homes</b><Leaf size={22}/></span></section><section className="trust-strip wrap" aria-label="Store benefits">{[{Icon:Leaf,title:'Fresh & thoughtfully picked',text:'Everyday essentials, selected with care'},{Icon:ShieldCheck,title:'Pay your way',text:'Cash on delivery available'},{Icon:Truck,title:'Choose your slot',text:'Delivering across Coimbatore'},{Icon:PackageCheck,title:'Your pantry, sorted',text:'From fresh produce to family favourites'}].map(({Icon,title,text}) => <div key={title}><span className="trust-icon"><Icon size={24}/></span><span><strong>{title}</strong><small>{text}</small></span></div>)}</section><section className="wrap category-section"><div className="section-title"><div><span className="eyebrow">SOMETHING FOR EVERY DAY</span><h2>What’s on your shopping list?</h2></div><Link href="/shop">All categories <ArrowRight size={16}/></Link></div><CategoryStrip categories={categories}/></section><section className="wrap bestseller-section"><div className="section-title"><div><span className="eyebrow">PANTRY FAVOURITES</span><h2><Leaf size={24}/> Everyday best picks</h2><p>The little essentials you’ll keep coming back for.</p></div><Link href="/shop">View all <ArrowRight size={16}/></Link></div><div className="home-grid">{products.map(product => <ProductCard product={product} key={product.id}/>)}</div></section><section className="wrap promos"><Link href="/category/vegetables" className="promo fresh-promo"><div><span className="eyebrow">FRESH FROM THE FARM</span><h2>Goodness you<br/>can taste.</h2><p>Colour your plate with fresh vegetables.</p><span className="button small">Shop vegetables <ArrowRight size={16}/></span></div><span className="promo-emoji" aria-hidden="true">🥦🥕</span></Link><Link href="/category/rice-dals" className="promo pantry-promo"><div><span className="eyebrow">THE HEART OF EVERY MEAL</span><h2>A well-stocked pantry.<br/>A happy kitchen.</h2><p>Rice, dals and all your everyday staples.</p><span className="text-link">Fill your pantry <ArrowRight size={16}/></span></div><span className="promo-emoji" aria-hidden="true">🌾</span></Link></section><section className="closing wrap"><BadgeCheck size={36}/><div><h2>Fresh beginnings. Familiar goodness.</h2><p>Your neighbourhood grocery experience, now a little more convenient.</p></div><Link className="button" href="/shop">Find your favourites <ArrowRight size={16}/></Link></section></main>;
+  const [categories, products] = await Promise.all([getCategories(), getProducts({ featured: true }, 5)]);
+  return <main>
+    <nav className="desktop-categories" aria-label="Categories"><div className="wrap">
+      <Link className="all-categories" href="/shop"><Menu size={16}/> All Categories <ChevronDown size={14}/></Link>
+      {categories.slice(0, 8).map(c => <Link href={`/category/${c.slug}`} key={c.slug}><CategoryThumb category={c} size={24}/>{c.name}</Link>)}
+    </div></nav>
+
+    <section className="hero" aria-label="Welcome to Appu’s Mart"><div className="wrap hero-inner">
+      <div className="hero-content">
+        <span className="script">Pure &amp; Fresh</span>
+        <h1>Authentic Indian Groceries</h1>
+        <p className="hero-sub">From our home to yours</p>
+        <ul className="hero-features">{heroFeatures.map(({ Icon, text }) => <li key={text}><Icon size={18}/><span>{text}</span></li>)}</ul>
+        <div className="hero-actions"><Link href="/shop" className="button">Shop Groceries <ArrowRight size={16}/></Link><Link href="/offers" className="button outline">View Offers</Link></div>
+      </div>
+      <div className="hero-art"><Image src="/images/hero-banner.webp" alt="A basket of fresh vegetables beside a sack of rice and bowls of spices" fill priority quality={90} sizes="(max-width: 760px) 70vw, 520px" className="hero-image"/></div>
+      <div className="hero-products" aria-hidden="true">
+        <Image src="/images/hero-rice.webp" alt="" width={383} height={363} quality={92} className="hero-pack rice"/>
+        <Image src="/images/hero-appalam.webp" alt="" width={388} height={267} quality={92} className="hero-pack appalam"/>
+      </div>
+    </div></section>
+
+    <section className="trust-strip wrap" aria-label="Store benefits">{trust.map(({ Icon, title, text }) => <div key={title}><span className="trust-icon"><Icon size={24}/></span><span><strong>{title}</strong><small>{text}</small></span></div>)}</section>
+
+    <section className="wrap category-section" aria-label="Shop by category"><CategoryStrip categories={categories}/></section>
+
+    <div className="wrap home-showcase">
+      <section className="bestseller-section" aria-labelledby="best-sellers">
+        <div className="section-title"><div><h2 id="best-sellers"><Leaf size={22}/> Best Sellers</h2><p>Pantry favourites, picked for every day.</p></div><Link href="/shop">View All <ArrowRight size={16}/></Link></div>
+        <div className="home-grid">{products.map(product => <ProductCard product={product} key={product.id}/>)}</div>
+      </section>
+      <div className="promos">
+        <Link href="/category/oils" className="promo fresh-promo">
+          <div><h2>Pure Cooking Oils</h2><p className="promo-sub">Sesame, coconut &amp; groundnut</p><ul className="promo-tags"><li><Sprout size={14}/> Daivam</li><li><Sprout size={14}/> PR Brand</li></ul><span className="button small">Shop Now <ArrowRight size={14}/></span></div>
+          <Image src="/images/promos/oils.webp" alt="" width={460} height={258} quality={90} className="promo-art"/>
+        </Link>
+        <Link href="/category/appalam-vathal" className="promo festival-promo">
+          <div><h2>Appu Appalam</h2><p className="promo-sub">Buy 1 Get 1 free on 150 g &amp; 200 g</p><span className="button small orange">Shop Now <ArrowRight size={14}/></span></div>
+          <Image src="/images/promos/appalam.webp" alt="" width={460} height={258} quality={90} className="promo-art"/>
+        </Link>
+      </div>
+    </div>
+  </main>;
 }

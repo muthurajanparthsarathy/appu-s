@@ -52,7 +52,7 @@ export function parseAddress(input: Record<string, unknown>): Parsed<AddressInpu
 
 export const slugify = (value: string) => value.normalize('NFKD').replace(/\p{M}/gu, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 80);
 
-export type ProductInput = { name: string; slug: string; categorySlug: string; brand: string; unit: string; pricePaise: number; mrpPaise: number; stock: number; icon: string; imageUrl: string | null; description: string; featured: boolean; active: boolean };
+export type ProductInput = { name: string; slug: string; categorySlug: string; brand: string; unit: string; pricePaise: number; mrpPaise: number; stock: number; icon: string; imageUrl: string | null; offer: 'NONE' | 'BOGO'; description: string; featured: boolean; active: boolean };
 
 // Admin product form. Prices arrive as rupee strings and are converted to integer paise.
 export function parseProduct(input: Record<string, unknown>, parsePaise: (value: unknown) => number | null): Parsed<ProductInput> {
@@ -81,7 +81,7 @@ export function parseProduct(input: Record<string, unknown>, parsePaise: (value:
   if (icon.length < 1 || [...icon].length > 4) errors.icon = 'Enter one emoji used when there is no photo.';
   if (imageUrl && (imageUrl.length > 500 || !(/^\/images\/[\w\-./]+$/.test(imageUrl) && !imageUrl.includes('..')) && !/^https:\/\/[^\s"'<>]+$/.test(imageUrl))) errors.imageUrl = 'Use a /images/… path or an https:// image URL.';
   if (description.length < 10 || description.length > 2000) errors.description = 'Write a description of 10–2000 characters.';
-  return Object.keys(errors).length ? { ok: false, errors } : { ok: true, data: { name, slug, categorySlug, brand, unit, pricePaise: pricePaise!, mrpPaise: mrpPaise!, stock, icon, imageUrl, description, featured: input.featured === 'on', active: input.active === 'on' } };
+  return Object.keys(errors).length ? { ok: false, errors } : { ok: true, data: { name, slug, categorySlug, brand, unit, pricePaise: pricePaise!, mrpPaise: mrpPaise!, stock, icon, imageUrl, offer: input.offer === 'BOGO' ? 'BOGO' : 'NONE', description, featured: input.featured === 'on', active: input.active === 'on' } };
 }
 
 // Only same-site relative paths are allowed as post-login destinations. Parsed the way browsers parse it,

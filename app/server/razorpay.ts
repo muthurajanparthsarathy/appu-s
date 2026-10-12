@@ -21,7 +21,7 @@ async function razorpayApi(config: RazorpayConfig, path: string, body?: unknown)
 }
 
 async function createRazorpayOrder(config: RazorpayConfig, order: { id: string; number: number; totalPaise: number }) {
-  const data = await razorpayApi(config, '/orders', { amount: order.totalPaise, currency: 'INR', receipt: orderNumber(order.number), notes: { veenamart_order_id: order.id } }) as { id?: unknown; amount?: unknown; currency?: unknown };
+  const data = await razorpayApi(config, '/orders', { amount: order.totalPaise, currency: 'INR', receipt: orderNumber(order.number), notes: { store_order_id: order.id } }) as { id?: unknown; amount?: unknown; currency?: unknown };
   if (typeof data.id !== 'string' || data.amount !== order.totalPaise || data.currency !== 'INR') throw new Error('Unexpected Razorpay order response');
   return data.id;
 }
@@ -37,7 +37,7 @@ export async function capturedPayment(config: RazorpayConfig, razorpayPaymentId:
   return { captured: payment.status === 'captured' };
 }
 
-// Creates the Razorpay order once per VeenaMart order; repeated calls reuse it so retries never double-charge.
+// Creates the Razorpay order once per store order; repeated calls reuse it so retries never double-charge.
 export async function startRazorpayCheckout(config: RazorpayConfig, order: { id: string; number: number; totalPaise: number; razorpayOrderId: string | null }, user: SessionUser): Promise<RazorpayCheckout> {
   let razorpayOrderId = order.razorpayOrderId;
   if (!razorpayOrderId) {

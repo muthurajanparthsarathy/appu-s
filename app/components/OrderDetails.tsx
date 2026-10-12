@@ -24,8 +24,8 @@ export function OrderBody({ order, showActors = false }: { order: FullOrder; sho
     <section className="panel">
       <h2>Items</h2>
       <ul className="order-items">{order.items.map(item => <li key={item.id}>
-        <span className="cart-thumb"><ProductVisual product={{ name: item.productName, icon: item.icon, imageUrl: item.imageUrl, categorySlug: '' }}/></span>
-        <span><Link href={`/product/${item.productSlug}`}>{item.productName}</Link><small>{item.unit} · {money(item.unitPricePaise)} × {item.quantity}</small></span>
+        <span className="cart-thumb"><ProductVisual product={{ name: item.productName, imageUrl: item.imageUrl }}/></span>
+        <span><Link href={`/product/${item.productSlug}`}>{item.productName}</Link><small>{item.unit} · {money(item.unitPricePaise)} × {item.quantity}{item.quantity > item.paidQuantity && <> · <b className="free-note">{item.quantity - item.paidQuantity} free</b></>}</small></span>
         <strong>{money(item.lineTotalPaise)}</strong>
       </li>)}</ul>
       <div className="order-totals">
