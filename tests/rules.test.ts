@@ -5,7 +5,7 @@ import { availableSlots, findSlot, isPincode, SLOT_CUTOFF_MINUTES } from '../app
 import { ADMIN_CANCELLABLE, CUSTOMER_CANCELLABLE, NEXT_STATUS, paymentLabel, paymentStatusAfterAdvance, paymentStatusAfterCancel } from '../app/server/order-rules';
 import { hashPassword, verifyPassword } from '../app/server/password';
 import { hmacSha256Hex, verifyPaymentSignature, verifyWebhookSignature } from '../app/server/razorpay-signature';
-import { normalizeIndianMobile, parseAddress, parseProduct, parseRegistration, safeNextPath, slugify } from '../app/server/validation';
+import { normalizeIndianMobile, parseAddress, parseLoginIdentifier, parseProduct, parseRegistration, safeNextPath, slugify } from '../app/server/validation';
 
 test('rupee input converts to exact integer paise', () => {
   assert.equal(parseRupeesToPaise('32'), 3200);
@@ -103,6 +103,13 @@ test('registration and address validation', () => {
   assert.ok(address.ok && address.data.line2 === null);
   const badAddress = parseAddress({ fullName: '', phone: '1', line1: 'x', city: '', pincode: '0' });
   assert.ok(!badAddress.ok && Object.keys(badAddress.errors).length === 5);
+});
+
+test('sign-in identifier accepts an email address or an Indian mobile number', () => {
+  assert.deepEqual(parseLoginIdentifier(' Asha@Example.COM '), { email: 'asha@example.com' });
+  assert.deepEqual(parseLoginIdentifier('+91 98765 43210'), { phone: '9876543210' });
+  assert.deepEqual(parseLoginIdentifier('09876543210'), { phone: '9876543210' });
+  for (const bad of ['', '   ', 'nope@', '@example.com', 'asha', '12345', '5876543210', null, undefined, 42]) assert.equal(parseLoginIdentifier(bad), null);
 });
 
 test('product form validation converts money and guards image URLs', () => {

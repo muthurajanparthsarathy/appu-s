@@ -1,7 +1,8 @@
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
-import { register } from '@/app/actions/auth';
-import { ActionForm, Field } from '@/app/components/forms';
+import { Sparkle } from 'lucide-react';
+import { AuthShell } from '@/app/components/AuthShell';
+import { RegisterForm } from '@/app/components/AuthForms';
 import { DatabaseRequired } from '@/app/components/DatabaseRequired';
 import { isDatabaseMode } from '@/app/server/config';
 import { getCurrentUser } from '@/app/server/session';
@@ -12,15 +13,12 @@ export default async function RegisterPage({ searchParams }: { searchParams: Pro
   if (!isDatabaseMode()) return <DatabaseRequired feature="Creating an account"/>;
   const next = safeNextPath((await searchParams).next);
   if (await getCurrentUser()) redirect(next);
-  return <main className="wrap auth-page"><section className="auth-card">
-    <span className="eyebrow">A FRESH START</span><h1>Create your account</h1>
-    <ActionForm action={register} submitLabel="Create account" pendingLabel="Creating account…">
-      <input type="hidden" name="next" value={next}/>
-      <Field name="name" label="Full name" required autoComplete="name" maxLength={80}/>
-      <Field name="email" label="Email" type="email" required autoComplete="email" inputMode="email" maxLength={254}/>
-      <Field name="phone" label="Mobile number (optional)" type="tel" inputMode="tel" autoComplete="tel-national" maxLength={16} hint="Used by our delivery partner to reach you."/>
-      <Field name="password" label="Password" type="password" required autoComplete="new-password" maxLength={128} hint={`At least ${PASSWORD_MIN} characters.`}/>
-    </ActionForm>
-    <p className="auth-switch">Already have an account? <Link href={`/login?next=${encodeURIComponent(next)}`}>Sign in</Link></p>
-  </section></main>;
+  return <AuthShell variant="register">
+    <p className="auth-brandline"><Sparkle size={13} aria-hidden="true"/> Appu’s Mart · Coimbatore</p>
+    <span className="auth-tag">Join the Heritage Pantry</span>
+    <h1>Begin Your Heritage Journey</h1>
+    <p className="auth-lead">Create an account to order Appu rice, oils, ghee and appalam, and track every delivery.</p>
+    <RegisterForm next={next} passwordMin={PASSWORD_MIN}/>
+    <p className="auth-switch-row">Already have an account?<Link href={`/login?next=${encodeURIComponent(next)}`}>Sign in here</Link></p>
+  </AuthShell>;
 }

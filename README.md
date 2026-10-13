@@ -40,7 +40,7 @@ Leave the `RAZORPAY_*` values empty to sell with cash on delivery only. To enabl
 - **Storefront**: home, 4 categories (Rice, Cooking Oils, Ghee & Butter, Appalam & Vathal), 30 products from the owner's price list, search, price sort, pagination (24 per page), offers, product pages with stock levels. 9 products without a confirmed price are created **hidden**; set a price in Admin → Products and tick "Visible in store".
 - **Buy 1 Get 1**: per-product offer (Appu Appalam 150 g and Gold 200 g). Every second pack on the line is free ("add 2, pay for 1"), enforced in the server quote and recorded on orders as paid vs free packs. There's also a pincode delivery checker in the header.
 - **Basket**: kept on the device and synced across tabs. Prices always come from the server quote (integer paise).
-- **Accounts**: email + password (scrypt hashes) with HTTP-only session cookies, rate-limited login/registration, and saved addresses with Indian mobile/pincode validation.
+- **Accounts**: email + password (scrypt hashes) with HTTP-only session cookies, rate-limited login/registration, and saved addresses with Indian mobile/pincode validation. Customers can sign in with their email or the mobile number saved at registration (one account per mobile). "Remember this device" keeps a 30-day cookie; otherwise the cookie ends with the browser session and the server session expires after 12 hours. `/login` and `/register` are standalone split-card pages without the store header, footer or bottom navigation.
 - **Checkout**:
   - Delivery is limited to serviceable pincodes. The 3-hour slots (7–10, 12–3, 5–8 IST over the next 3 days) close 2 hours before they start.
   - Delivery costs ₹35 below ₹499 and is free from ₹499.
@@ -65,8 +65,8 @@ Leave the `RAZORPAY_*` values empty to sell with cash on delivery only. To enabl
 ```powershell
 npm run db:validate
 npm run typecheck
-npm test          # 19 unit tests (pricing, slots, validation, passwords, signatures, order rules, Razorpay client)
-npm run test:db   # 13 PostgreSQL integration tests (needs DATABASE_URL; cleans up after itself)
+npm test          # 23 unit tests (pricing, slots, validation, passwords, signatures, order rules, Razorpay client)
+npm run test:db   # 15 PostgreSQL integration tests (needs DATABASE_URL; cleans up after itself)
 npm run build
 ```
 

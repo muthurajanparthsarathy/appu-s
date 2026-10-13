@@ -9,15 +9,17 @@ import { isDatabaseMode } from './config';
 
 const COOKIE = 'vm_session';
 const SESSION_DAYS = 30;
+// Without "remember this device" the cookie lasts until the browser closes, and the server session at most this long.
+const SHORT_SESSION_HOURS = 12;
 const hashToken = (token: string) => createHash('sha256').update(token).digest('hex');
 const userSelect = { id: true, email: true, name: true, phone: true, role: true } as const;
 
-export async function createSession(userId: string) {
+export async function createSession(userId: string, remember = true) {
   const token = randomBytes(32).toString('base64url');
-  const expiresAt = new Date(Date.now() + SESSION_DAYS * 86_400_000);
+  const expiresAt = new Date(Date.now() + (remember ? SESSION_DAYS * 86_400_000 : SHORT_SESSION_HOURS * 3_600_000));
   await db().session.create({ data: { id: hashToken(token), userId, expiresAt } });
   await db().session.deleteMany({ where: { userId, expiresAt: { lt: new Date() } } });
-  (await cookies()).set(COOKIE, token, { httpOnly: true, sameSite: 'lax', secure: process.env.NODE_ENV === 'production', path: '/', expires: expiresAt });
+  (await cookies()).set(COOKIE, token, { httpOnly: true, sameSite: 'lax', secure: process.env.NODE_ENV === 'production', path: '/', ...(remember ? { expires: expiresAt } : {}) });
 }
 
 export const getCurrentUser = cache(async (): Promise<SessionUser | null> => {

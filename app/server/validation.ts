@@ -15,6 +15,18 @@ export function normalizeIndianMobile(value: unknown) {
   return /^[6-9]\d{9}$/.test(digits) ? digits : null;
 }
 
+// Sign-in accepts an email address or the 10-digit Indian mobile number saved at registration.
+export function parseLoginIdentifier(value: unknown): { email: string } | { phone: string } | null {
+  const raw = text(value);
+  if (!raw) return null;
+  if (raw.includes('@')) {
+    const email = normalizeEmail(raw);
+    return isEmail(email) ? { email } : null;
+  }
+  const phone = normalizeIndianMobile(raw);
+  return phone ? { phone } : null;
+}
+
 export function parseRegistration(input: { name: unknown; email: unknown; password: unknown; phone?: unknown }): Parsed<{ name: string; email: string; password: string; phone: string | null }> {
   const errors: FieldErrors = {};
   const name = text(input.name);

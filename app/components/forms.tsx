@@ -4,10 +4,12 @@ import type { ActionResult } from '@/app/lib/types';
 
 type Result = Exclude<ActionResult, void>;
 const FieldErrorsContext = createContext<Record<string, string>>({});
+// For custom field components that live inside an ActionForm.
+export const useFieldError = (name: string): string | undefined => useContext(FieldErrorsContext)[name];
 
 // Submits FormData to a server action and renders its result. Inputs keep their values after a failed submit.
 export function ActionForm({ action, submitLabel, pendingLabel = 'Saving…', children, className = 'stack-form', resetOnSuccess = false, submitClassName = 'button' }: {
-  action: (formData: FormData) => Promise<ActionResult>; submitLabel: string; pendingLabel?: string; children: ReactNode; className?: string; resetOnSuccess?: boolean; submitClassName?: string;
+  action: (formData: FormData) => Promise<ActionResult>; submitLabel: ReactNode; pendingLabel?: ReactNode; children: ReactNode; className?: string; resetOnSuccess?: boolean; submitClassName?: string;
 }) {
   const [result, setResult] = useState<Result>({});
   const [pending, setPending] = useState(false);
